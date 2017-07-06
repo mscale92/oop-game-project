@@ -26,12 +26,17 @@ var images = {};
 });
 
 
-
+class Entity {
+    render(ctx) {
+        ctx.drawImage(this.sprite, this.x, this.y);
+    }
+}
 
 
 // This section is where you will be doing most of your coding
-class Enemy {
+class Enemy extends Entity {
     constructor(xPos) {
+        super();
         this.x = xPos;
         this.y = -ENEMY_HEIGHT;
         this.sprite = images['enemy.png'];
@@ -44,13 +49,17 @@ class Enemy {
         this.y = this.y + timeDiff * this.speed;
     }
 
-    render(ctx) {
-        ctx.drawImage(this.sprite, this.x, this.y);
-    }
+    //render(ctx) {
+    //    ctx.drawImage(this.sprite, this.x, this.y);
+
+    //    //A test sprite to understand the graph
+    //    //ctx.drawImage(this.sprite, 0, GAME_HEIGHT - PLAYER_HEIGHT - ENEMY_HEIGHT)
+    //}
 }
 
-class Player {
+class Player extends Entity {
     constructor() {
+        super();
         this.x = 2 * PLAYER_WIDTH;
         this.y = GAME_HEIGHT - PLAYER_HEIGHT - 10;
         this.sprite = images['player.png'];
@@ -66,9 +75,9 @@ class Player {
         }
     }
 
-    render(ctx) {
-        ctx.drawImage(this.sprite, this.x, this.y);
-    }
+    //render(ctx) {
+    //    ctx.drawImage(this.sprite, this.x, this.y);
+    //}
 }
 
 
@@ -119,11 +128,16 @@ class Engine {
         var enemySpots = GAME_WIDTH / ENEMY_WIDTH;
 
         var enemySpot;
+        //console.log(typeof enemySpot, "value of enemySpot");
+        var test = enemySpot;
+
         // Keep looping until we find a free enemy spot at random
-        while (!enemySpot || this.enemies[enemySpot]) {
+        //console.log(!enemySpot, "type of enemies enemySpot")
+        while (enemySpot === undefined || this.enemies[enemySpot]) {
+            //console.log(test, "did it make it?")
             enemySpot = Math.floor(Math.random() * enemySpots);
         }
-
+        console.log(this.enemies, "array")
         this.enemies[enemySpot] = new Enemy(enemySpot * ENEMY_WIDTH);
     }
 
@@ -199,8 +213,29 @@ class Engine {
     }
 
     isPlayerDead() {
-        // TODO: fix this function!
-        return false;
+        // TODO: fix this function! ...but I like staying alive. I never lose!
+
+        //loop over all enemies and check if they are overlapping the player sprite
+        var dead = false;
+        this.enemies.forEach((enemy, enemyIdx) => {
+            //console.log(enemy.x, this.player.x, "enemy x coordinate")
+           
+            if (enemy.x === this.player.x) {
+                //var playerY = GAME_HEIGHT - PLAYER_HEIGHT - 10
+                var enemyY = Math.floor(enemy.y)
+                
+                var playerY = this.player.y - ENEMY_HEIGHT
+                //console.log(enemyY, playerY)
+
+                //Y in inverted, goes up rather than down
+                    //added the 100 to avoid annoying clipping
+                if (enemyY >= playerY && enemyY < playerY + 100) {
+                    dead = true;
+                    return
+                }
+            }
+        });
+        return dead;
     }
 }
 
