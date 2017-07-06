@@ -107,6 +107,12 @@ class Engine {
 
         // Since gameLoop will be called out of context, bind it once here.
         this.gameLoop = this.gameLoop.bind(this);
+
+        document.getElementById('startButton').onclick = () => {
+            this.start()
+        }
+
+     
     }
 
     /*
@@ -245,4 +251,4 @@ class Engine {
 
 // This section will start the game
 var gameEngine = new Engine(document.getElementById('app'));
-gameEngine.start();
+//gameEngine.start();
